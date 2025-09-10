@@ -5,7 +5,7 @@ assignees: []               # 필요하면 ["id1", "id2"]
 addReviewers: true
 reviewers:
   - Yanghewon
-  - ch
+  - HunterChanho
 
 # 최소 리뷰어 수 (리스트에서 랜덤/라운드로빈으로 선택)
 numberOfReviewers: 1

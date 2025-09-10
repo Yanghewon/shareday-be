@@ -1,0 +1,20 @@
+# .github/auto_assign.yml
+addAssignees: false         # PR 작성자를 assignee로 자동 지정할지 여부
+assignees: []               # 필요하면 ["id1", "id2"]
+
+addReviewers: true
+reviewers:
+  - Yanghewon
+  - ch
+
+# 최소 리뷰어 수 (리스트에서 랜덤/라운드로빈으로 선택)
+numberOfReviewers: 1
+
+# 초안(PR draft)에는 동작하지 않게
+skipDraft: true
+
+# 제목/라벨 조건으로 제어하고 싶을 때 사용 (옵션)
+# title: "feat:"
+# labels:
+#   include: ["backend"]
+#   exclude: ["wip"]

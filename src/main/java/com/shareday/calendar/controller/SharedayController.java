@@ -1,6 +1,6 @@
-package com.shareday.controller;
+package com.shareday.calendar.controller;
 
-import com.shareday.service.SharedayService;
+import com.shareday.calendar.service.SharedayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

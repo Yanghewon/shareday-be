@@ -1,4 +1,4 @@
-package com.shareday.service;
+package com.shareday.calendar.service;
 
 import org.springframework.stereotype.Service;
 

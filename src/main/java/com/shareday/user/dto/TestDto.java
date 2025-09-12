@@ -1,6 +1,6 @@
 package com.shareday.user.dto;
 
-import com.shareday.common.enums.UserType;
+import com.shareday.auth.enums.UserType;
 
 public record TestDto(
         Long id,

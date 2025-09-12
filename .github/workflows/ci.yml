@@ -11,11 +11,6 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-# 워크플로우 전체 권한 (리뷰어 요청 위해 필요)
-permissions:
-  contents: read
-  pull-requests: write
-
 jobs:
   # ✅ 빌드 & 테스트
   build-test:

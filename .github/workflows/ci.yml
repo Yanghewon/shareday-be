@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Auto assign reviewers
-        uses: kentaro-m/auto-assign@v2
+        uses: kentaro-m/auto-assign@v1
         with:
           configuration-path: .github/auto_assign.yml
 

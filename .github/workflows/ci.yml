@@ -17,16 +17,6 @@ permissions:
   pull-requests: write
 
 jobs:
-  # ✅ PR 열릴 때 리뷰어 자동 지정
-  auto-assign-reviewers:
-    if: ${{ github.event_name == 'pull_request' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Auto assign reviewers
-        uses: toshimaru/auto-assign-action@v1
-        with:
-          configuration-path: .github/auto_assign.yml
-
   # ✅ 빌드 & 테스트
   build-test:
     name: build-and-test

@@ -2,46 +2,48 @@ server:
   port: 8080
 
 spring:
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/shareday?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+#    username: root          # MySQL 계정명
+#    password: 비밀번호       # MySQL 비밀번호
+#    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: update      # 개발 환경에서만 사용! (create, update, validate 등)
+    show-sql: true          # 콘솔에 SQL 출력
+    properties:
+      hibernate:
+        format_sql: true    # SQL 보기 좋게 출력
   threads:
     virtual:
       enabled: true
-
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id: YOUR_GOOGLE_CLIENT_ID
-            client-secret: YOUR_GOOGLE_CLIENT_SECRET
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: profile,email
-            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+            redirect-uri: "http://localhost:8080/login/oauth2/code/google"
 
           naver:
-            client-id: YOUR_NAVER_CLIENT_ID
-            client-secret: YOUR_NAVER_CLIENT_SECRET
+            client-id: ${NAVER_CLIENT_ID}
+            client-secret: ${NAVER_CLIENT_SECRET}
             client-authentication-method: POST
             authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/naver"
+            redirect-uri: "http://localhost:8080/login/oauth2/code/naver"
             scope: name,email
             client-name: Naver
             provider: naver
 
           kakao:
-            client-id: YOUR_KAKAO_CLIENT_ID
-            client-secret: YOUR_KAKAO_CLIENT_SECRET
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
             client-authentication-method: POST
             authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
-            scope: profile_nickname,account_email
+            redirect-uri: "http://localhost:8080/login/oauth2/code/kakao"
+            scope: profile_nickname
             client-name: Kakao
             provider: kakao
 
@@ -60,7 +62,7 @@ spring:
 
 app:
   cors:
-    allowed-origins: "http://localhost:3000,http://127.0.0.1:3000"
+    allowed-origins: "http://localhost:5173"
 
 springdoc:
   api-docs:
@@ -71,4 +73,3 @@ springdoc:
     path: /swagger-ui
     operationsSorter: method
     tagsSorter: alpha
-

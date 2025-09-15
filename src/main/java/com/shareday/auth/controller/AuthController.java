@@ -1,6 +1,6 @@
 package com.shareday.auth.controller;
 
-import com.shareday.auth.authService.AuthService;
+import com.shareday.auth.service.AuthService;
 import com.shareday.auth.dto.SocialSignUpRequest;
 import com.shareday.auth.dto.SocialSignUpResponse;
 import com.shareday.common.api.ApiResponse;

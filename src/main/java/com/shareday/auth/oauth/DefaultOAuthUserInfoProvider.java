@@ -16,11 +16,11 @@ public class DefaultOAuthUserInfoProvider implements OAuthUserInfoProvider {
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public OAuthUserInfo getUserInfo(String provider, String accessToken) {
-        return switch (provider.toLowerCase()) {
-            case "google" -> fetchGoogleUser(accessToken);
-            case "naver" -> fetchNaverUser(accessToken);
-            case "kakao" -> fetchKakaoUser(accessToken);
+    public OAuthUserInfo getUserInfo(ProviderType provider, String accessToken) {
+        return switch (provider) {
+            case ProviderType.google -> fetchGoogleUser(accessToken);
+            case ProviderType.naver -> fetchNaverUser(accessToken);
+            case ProviderType.kakao -> fetchKakaoUser(accessToken);
             default -> throw new IllegalArgumentException("지원하지 않는 provider: " + provider);
         };
     }

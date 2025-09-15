@@ -1,4 +1,4 @@
-package com.shareday.auth.authService;
+package com.shareday.auth.service;
 
 import com.shareday.auth.dto.OAuthUserInfo;
 import com.shareday.auth.dto.SocialSignUpRequest;
@@ -7,6 +7,7 @@ import com.shareday.auth.entity.User;
 import com.shareday.auth.oauth.JwtProvider;
 import com.shareday.auth.oauth.OAuthUserInfoProvider;
 
+import com.shareday.auth.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,4 +1,4 @@
-package com.shareday.auth.authService;
+package com.shareday.auth.repository;
 
 import com.shareday.auth.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,12 +1,12 @@
 package com.shareday.calendar.service;
 
 import com.shareday.calendar.dto.*;
-import com.shareday.calendar.entity.CalendarEvent;
+import com.shareday.calendar.entity.Calendar;
 import com.shareday.calendar.repository.CalendarRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class CalendarService {
@@ -19,60 +19,53 @@ public class CalendarService {
 
     @Transactional
     public CalendarResponse createEvent(CalendarCreateRequest request) {
-        CalendarEvent event = new CalendarEvent(
+        Calendar event = new Calendar(
                 request.title(),
+                request.eventDate(),
                 request.startTime(),
                 request.endTime(),
                 request.createdBy(),
                 request.participants(),
-                request.description()
+                request.description(),
+                request.type(),
+                request.isDDay()
         );
-        CalendarEvent saved = calendarRepository.save(event);
-        return toResponse(saved);
+        return CalendarResponse.from(calendarRepository.save(event));
     }
 
     @Transactional(readOnly = true)
     public List<CalendarResponse> getAllEvents() {
         return calendarRepository.findAll().stream()
-                .map(this::toResponse)
+                .map(CalendarResponse::from)
                 .toList();
     }
 
     @Transactional(readOnly = true)
-    public CalendarResponse getEvent(UUID id) {
-        CalendarEvent event = calendarRepository.findById(id)
+    public CalendarResponse getEvent(Long id) {
+        Calendar event = calendarRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
-        return toResponse(event);
+        return CalendarResponse.from(event);
     }
 
     @Transactional
-    public CalendarResponse updateEvent(UUID id, CalendarUpdateRequest request) {
-        CalendarEvent event = calendarRepository.findById(id)
+    public CalendarResponse updateEvent(Long id, CalendarUpdateRequest request) {
+        Calendar event = calendarRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
         event.update(
                 request.title(),
+                request.eventDate(),
                 request.startTime(),
                 request.endTime(),
                 request.participants(),
-                request.description()
+                request.description(),
+                request.type(),
+                request.isDDay()
         );
-        return toResponse(event);
+        return CalendarResponse.from(event);
     }
 
     @Transactional
-    public void deleteEvent(UUID id) {
+    public void deleteEvent(Long id) {
         calendarRepository.deleteById(id);
-    }
-
-    private CalendarResponse toResponse(CalendarEvent event) {
-        return new CalendarResponse(
-                event.getId(),
-                event.getTitle(),
-                event.getStartTime(),
-                event.getEndTime(),
-                event.getCreatedBy(),
-                event.getParticipants(),
-                event.getDescription()
-        );
     }
 }

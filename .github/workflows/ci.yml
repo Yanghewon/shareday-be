@@ -27,12 +27,13 @@ jobs:
           java-version: '21'
           cache: gradle
 
-      # ✅ gradle/wrapper-validation-action 대신 gradlew 자체 검증 사용
-      - name: Validate Gradle wrapper
-        run: ./gradlew wrapper --gradle-version 8.7 --validate
-
+      # ✅ 먼저 실행 권한 부여
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
+
+      # ✅ wrapper 검증
+      - name: Validate Gradle wrapper
+        run: ./gradlew wrapper --gradle-version 8.7 --validate
 
       - name: Build & Test
         run: ./gradlew clean build --stacktrace

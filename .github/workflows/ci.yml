@@ -12,11 +12,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # ✅ 빌드 & 테스트
   build-test:
     name: build-and-test
     runs-on: ubuntu-latest
-    # push/PR 모두에서 실행
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,8 +27,9 @@ jobs:
           java-version: '21'
           cache: gradle
 
+      # ✅ gradle/wrapper-validation-action 대신 gradlew 자체 검증 사용
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v2
+        run: ./gradlew wrapper --gradle-version 8.7 --validate
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew

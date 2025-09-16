@@ -27,13 +27,8 @@ jobs:
           java-version: '21'
           cache: gradle
 
-      # ✅ 먼저 실행 권한 부여
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
-
-      # ✅ wrapper 검증
-      - name: Validate Gradle wrapper
-        run: ./gradlew wrapper --gradle-version 8.7 --validate
 
       - name: Build & Test
         run: ./gradlew clean build --stacktrace

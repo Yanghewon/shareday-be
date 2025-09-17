@@ -1,6 +1,7 @@
 package com.shareday.calendar.entity;
 
 //import com.shareday.user.entity.User;
+import com.shareday.calendar.enums.ParticipantType;
 import com.shareday.couple.entity.Couple;
 import jakarta.persistence.*;
 
@@ -10,10 +11,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "calendar_event")
 public class Calendar {
-
-    public enum EventType {
-        PERSONAL, SHARED, PARTNER
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // BIGINT AUTO_INCREMENT
@@ -56,7 +53,7 @@ public class Calendar {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    private EventType type;
+    private ParticipantType type;
 
     @Column(name = "is_dday", nullable = false)
     private boolean isDDay = false;
@@ -71,7 +68,7 @@ public class Calendar {
 
     public Calendar(String title, LocalDate eventDate, LocalDateTime startTime, LocalDateTime endTime,
                     String createdBy, String participants, String description,
-                    EventType type, boolean isDDay) {
+                    ParticipantType type, boolean isDDay) {
         this.title = title;
         this.eventDate = eventDate;
         this.startTime = startTime;
@@ -105,7 +102,7 @@ public class Calendar {
     public LocalDateTime getEndTime() { return endTime; }
     public String getCreatedBy() { return createdBy; }
     public String getParticipants() { return participants; }
-    public EventType getType() { return type; }
+    public ParticipantType getType() { return type; }
     public boolean isDDay() { return isDDay; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
@@ -113,7 +110,7 @@ public class Calendar {
     // Update
     public void update(String title, LocalDate eventDate, LocalDateTime startTime,
                        LocalDateTime endTime, String participants,
-                       String description, EventType type, boolean isDDay) {
+                       String description, ParticipantType type, boolean isDDay) {
         this.title = title;
         this.eventDate = eventDate;
         this.startTime = startTime;

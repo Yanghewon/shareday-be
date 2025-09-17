@@ -22,6 +22,7 @@ public class CoupleController {
         this.coupleService = coupleService;
     }
 
+    //TODO:: 각 API가 무슨기능을 하는지 깃 이슈에 정리하기
     @PostMapping
     @Operation(summary = "커플 생성", description = "새로운 커플을 등록합니다.")
     public ResponseEntity<ApiResponse<CoupleResponse>> create(@RequestBody CoupleRequest request) {

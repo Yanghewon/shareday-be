@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import lombok.*;
-
 @Entity
 @Table(name = "couple")
 @Getter
@@ -19,6 +18,10 @@ public class Couple {
     private Long coupleId;
 
     private LocalDate startDate;
+
+    // 초대 코드 (삭제되지 않고 계속 유지)
+    @Column(unique = true, length = 20)
+    private String inviteCode;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

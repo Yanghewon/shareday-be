@@ -24,8 +24,6 @@ public class CalendarService {
                 request.eventDate(),
                 request.startTime(),
                 request.endTime(),
-                request.createdBy(),
-                request.participants(),
                 request.description(),
                 request.participantType(),
                 request.isDDay()
@@ -56,7 +54,6 @@ public class CalendarService {
                 request.eventDate(),
                 request.startTime(),
                 request.endTime(),
-                request.participants(),
                 request.description(),
                 request.participantType(),
                 request.isDDay()

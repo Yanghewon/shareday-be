@@ -9,7 +9,7 @@ import com.shareday.couple.repository.CoupleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -17,15 +17,17 @@ public class CoupleService {
 
     private final CoupleRepository coupleRepository;
 
-    // 간단히 메모리 맵으로 초대 코드 저장 (실제 운영에서는 Redis, DB 사용 권장)
-    private final Map<String, Long> inviteCodeStore = new HashMap<>();
-
     public CoupleResponse create(CoupleRequest request) {
         Couple couple = Couple.builder()
                 .startDate(request.startDate())
                 .build();
         Couple saved = coupleRepository.save(couple);
-        return new CoupleResponse(saved.getCoupleId(), saved.getStartDate(), saved.getCreatedAt(), saved.getUpdatedAt());
+        return new CoupleResponse(
+                saved.getCoupleId(),
+                saved.getStartDate(),
+                saved.getCreatedAt(),
+                saved.getUpdatedAt()
+        );
     }
 
     public CoupleResponse update(Long id, CoupleRequest request) {
@@ -33,34 +35,47 @@ public class CoupleService {
                 .orElseThrow(() -> new IllegalArgumentException("Couple not found"));
         couple.setStartDate(request.startDate());
         Couple updated = coupleRepository.save(couple);
-        return new CoupleResponse(updated.getCoupleId(), updated.getStartDate(), updated.getCreatedAt(), updated.getUpdatedAt());
+        return new CoupleResponse(
+                updated.getCoupleId(),
+                updated.getStartDate(),
+                updated.getCreatedAt(),
+                updated.getUpdatedAt()
+        );
     }
 
     public void delete(Long id) {
         coupleRepository.deleteById(id);
     }
 
-    public InviteResponse generateInviteCode() {
+    // 초대 코드 생성 (DB에 영구 저장)
+    public InviteResponse generateInviteCode(Long coupleId) {
+        Couple couple = coupleRepository.findById(coupleId)
+                .orElseThrow(() -> new IllegalArgumentException("Couple not found"));
+
+        if (couple.getInviteCode() != null) {
+            // 이미 코드 있으면 그대로 반환
+            return new InviteResponse(couple.getInviteCode());
+        }
+
         String code = UUID.randomUUID().toString().substring(0, 8);
-        // 여기서는 단순히 ID 0과 매핑 (실제 구현은 로그인 사용자 ID와 매핑 필요)
-        inviteCodeStore.put(code, 0L);
+        couple.setInviteCode(code);
+        coupleRepository.save(couple);
+
         return new InviteResponse(code);
     }
 
+    // 초대 코드 수락
     public CoupleResponse acceptInvite(InviteAcceptRequest request) {
-        Long inviterId = inviteCodeStore.get(request.inviteCode());
-        if (inviterId == null) {
-            throw new IllegalArgumentException("Invalid invite code");
-        }
+        Couple couple = coupleRepository.findByInviteCode(request.inviteCode())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid invite code"));
 
-        Couple couple = Couple.builder()
-                .startDate(null) // 교제 시작일은 이후 수정 가능
-                .build();
-        Couple saved = coupleRepository.save(couple);
-
-        // 사용된 코드 삭제
-        inviteCodeStore.remove(request.inviteCode());
-
-        return new CoupleResponse(saved.getCoupleId(), saved.getStartDate(), saved.getCreatedAt(), saved.getUpdatedAt());
+        // 필요하다면 수락 로직 추가 (예: 상대방 유저 등록)
+        // 여기서는 단순히 커플 정보 반환
+        return new CoupleResponse(
+                couple.getCoupleId(),
+                couple.getStartDate(),
+                couple.getCreatedAt(),
+                couple.getUpdatedAt()
+        );
     }
 }

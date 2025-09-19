@@ -44,11 +44,12 @@ public class CoupleController {
         return ResponseEntity.ok(ApiResponse.ok(null));
     }
 
-    @PostMapping("/invite")
+    @PostMapping("/{coupleId}/invite")
     @Operation(summary = "초대 코드 생성", description = "커플 초대 코드를 생성합니다.")
-    public ResponseEntity<ApiResponse<InviteResponse>> invite() {
-        return ResponseEntity.ok(ApiResponse.ok(coupleService.generateInviteCode()));
+    public ResponseEntity<ApiResponse<InviteResponse>> invite(@PathVariable Long coupleId) {
+        return ResponseEntity.ok(ApiResponse.ok(coupleService.generateInviteCode(coupleId)));
     }
+
 
     @PostMapping("/accept")
     @Operation(summary = "초대 코드 수락", description = "초대 코드를 이용해 커플을 수락합니다.")

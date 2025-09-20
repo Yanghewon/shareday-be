@@ -22,12 +22,7 @@ public class CoupleService {
                 .startDate(request.startDate())
                 .build();
         Couple saved = coupleRepository.save(couple);
-        return new CoupleResponse(
-                saved.getCoupleId(),
-                saved.getStartDate(),
-                saved.getCreatedAt(),
-                saved.getUpdatedAt()
-        );
+        return new CoupleResponse(saved.getStartDate());
     }
 
     public CoupleResponse update(Long id, CoupleRequest request) {
@@ -35,12 +30,7 @@ public class CoupleService {
                 .orElseThrow(() -> new IllegalArgumentException("Couple not found"));
         couple.setStartDate(request.startDate());
         Couple updated = coupleRepository.save(couple);
-        return new CoupleResponse(
-                updated.getCoupleId(),
-                updated.getStartDate(),
-                updated.getCreatedAt(),
-                updated.getUpdatedAt()
-        );
+        return new CoupleResponse(updated.getStartDate());
     }
 
     public void delete(Long id) {
@@ -70,12 +60,7 @@ public class CoupleService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid invite code"));
 
         // 필요하다면 수락 로직 추가 (예: 상대방 유저 등록)
-        // 여기서는 단순히 커플 정보 반환
-        return new CoupleResponse(
-                couple.getCoupleId(),
-                couple.getStartDate(),
-                couple.getCreatedAt(),
-                couple.getUpdatedAt()
-        );
+        // 여기서는 단순히 교제 시작일 반환
+        return new CoupleResponse(couple.getStartDate());
     }
 }

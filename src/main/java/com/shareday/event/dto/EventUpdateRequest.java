@@ -11,7 +11,6 @@ public record EventUpdateRequest(
         LocalDate eventDate,
         LocalDateTime startTime,
         LocalDateTime endTime,
-        String participants,
-        ParticipantType type,
+        ParticipantType participantType,
         Boolean isDday
 ) {}

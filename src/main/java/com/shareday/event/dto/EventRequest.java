@@ -21,7 +21,6 @@ public record EventRequest(
         String description,
 
         @NotNull(message = "이벤트 날짜는 필수입니다.")
-        @FutureOrPresent(message = "이벤트 날짜는 오늘 또는 미래여야 합니다.")
         LocalDate eventDate,
 
         @NotNull(message = "시작 시간은 필수입니다.")
@@ -30,17 +29,7 @@ public record EventRequest(
         @NotNull(message = "종료 시간은 필수입니다.")
         LocalDateTime endTime,
 
-        @NotBlank(message = "생성자 정보는 필수입니다.")
-        @Size(max = 100, message = "생성자 정보는 최대 100자까지 입력 가능합니다.")
-        String createdBy,
-
-        @Size(max = 255, message = "참여자 목록은 255자를 넘을 수 없습니다.")
-        String participants,
-
         @NotNull(message = "참여자 유형은 필수입니다.")
         @ValidEnum(enumClass = ParticipantType.class, message = "참여자 값이 올바르지 않습니다.")
-        ParticipantType participantType,
-
-        @NotNull(message = "D-Day 여부는 필수입니다.")
-        Boolean isDday
+        ParticipantType participantType
 ) {}

@@ -1,6 +1,5 @@
 package com.shareday.event.service;
 
-
 import com.shareday.event.dto.*;
 import com.shareday.event.entity.Event;
 import com.shareday.event.repository.EventRepository;
@@ -31,11 +30,9 @@ public class EventService {
                 .eventDate(request.eventDate())
                 .startTime(request.startTime())
                 .endTime(request.endTime())
-                .createdBy(request.createdBy())
-                .participants(request.participants())
-                .type(request.participantType())
-                .isDday(request.isDday())
+                .participantType(request.participantType())
                 .build();
+
         return toResponse(eventRepository.save(event));
     }
 
@@ -48,9 +45,7 @@ public class EventService {
         event.setEventDate(request.eventDate());
         event.setStartTime(request.startTime());
         event.setEndTime(request.endTime());
-        event.setParticipants(request.participants());
-        event.setType(request.type());
-        event.setIsDday(request.isDday());
+        event.setParticipantType(request.participantType());
 
         return toResponse(eventRepository.save(event));
     }
@@ -62,19 +57,12 @@ public class EventService {
     private EventResponse toResponse(Event e) {
         return new EventResponse(
                 e.getEventId(),
-                e.getCoupleId(),
-                e.getUserId(),
                 e.getTitle(),
                 e.getDescription(),
                 e.getEventDate(),
                 e.getStartTime(),
                 e.getEndTime(),
-                e.getCreatedBy(),
-                e.getParticipants(),
-                e.getType(),
-                e.getIsDday(),
-                e.getCreatedAt(),
-                e.getUpdatedAt()
+                e.getParticipantType()
         );
     }
 }

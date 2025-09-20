@@ -1,6 +1,5 @@
 package com.shareday.event.controller;
 
-
 import com.shareday.common.api.ApiResponse;
 import com.shareday.event.dto.EventRequest;
 import com.shareday.event.dto.EventResponse;
@@ -8,6 +7,7 @@ import com.shareday.event.dto.EventUpdateRequest;
 import com.shareday.event.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +39,7 @@ public class EventController {
     @Operation(summary = "이벤트 생성", description = "새로운 일정을 등록합니다.")
     public ResponseEntity<ApiResponse<EventResponse>> createEvent(
             @PathVariable Long calendarId,
-            @RequestBody EventRequest request
+            @Valid @RequestBody EventRequest request
     ) {
         return ResponseEntity.ok(ApiResponse.ok(eventService.createEvent(calendarId, request)));
     }
@@ -49,7 +49,7 @@ public class EventController {
     public ResponseEntity<ApiResponse<EventResponse>> updateEvent(
             @PathVariable Long calendarId,
             @PathVariable Long eventId,
-            @RequestBody EventUpdateRequest request
+            @Valid @RequestBody EventUpdateRequest request
     ) {
         return ResponseEntity.ok(ApiResponse.ok(eventService.updateEvent(calendarId, eventId, request)));
     }

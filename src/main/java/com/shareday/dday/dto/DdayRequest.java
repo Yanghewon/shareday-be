@@ -10,8 +10,5 @@ public record DdayRequest(
         String title,
 
         @NotNull(message = "날짜는 필수입니다.")
-        LocalDate targetDate,
-
-        @Size(max = 200)
-        String memo
+        LocalDate targetDate
 ) {}

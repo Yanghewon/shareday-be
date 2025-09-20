@@ -42,9 +42,6 @@ public class Calendar {
     @Column(name = "type", nullable = false)
     private ParticipantType participantType;
 
-    @Column(name = "is_dday", nullable = false)
-    private boolean isDDay = false;
-
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -58,15 +55,13 @@ public class Calendar {
                     LocalDateTime startTime,
                     LocalDateTime endTime,
                     String description,
-                    ParticipantType participantType,
-                    boolean isDDay) {
+                    ParticipantType participantType) {
         this.title = title;
         this.eventDate = eventDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;
         this.participantType = participantType;
-        this.isDDay = isDDay;
     }
 
     @PrePersist
@@ -88,7 +83,6 @@ public class Calendar {
     public LocalDateTime getStartTime() { return startTime; }
     public LocalDateTime getEndTime() { return endTime; }
     public ParticipantType getParticipantType() { return participantType; }
-    public boolean isDDay() { return isDDay; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 
@@ -98,14 +92,12 @@ public class Calendar {
                        LocalDateTime startTime,
                        LocalDateTime endTime,
                        String description,
-                       ParticipantType participantType,
-                       boolean isDDay) {
+                       ParticipantType participantType) {
         this.title = title;
         this.eventDate = eventDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = description;
         this.participantType = participantType;
-        this.isDDay = isDDay;
     }
 }

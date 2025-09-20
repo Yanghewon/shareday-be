@@ -13,8 +13,7 @@ public record CalendarResponse(
         LocalDateTime startTime,
         LocalDateTime endTime,
         String description,
-        ParticipantType participantType,
-        boolean isDDay
+        ParticipantType participantType
 ) {
     public static CalendarResponse from(Calendar event) {
         return new CalendarResponse(
@@ -24,8 +23,7 @@ public record CalendarResponse(
                 event.getStartTime(),
                 event.getEndTime(),
                 event.getDescription(),
-                event.getParticipantType(),
-                event.isDDay()
+                event.getParticipantType()
         );
     }
 }

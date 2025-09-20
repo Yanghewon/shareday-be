@@ -25,8 +25,7 @@ public class CalendarService {
                 request.startTime(),
                 request.endTime(),
                 request.description(),
-                request.participantType(),
-                request.isDDay()
+                request.participantType()
         );
         return CalendarResponse.from(calendarRepository.save(event));
     }
@@ -55,8 +54,7 @@ public class CalendarService {
                 request.startTime(),
                 request.endTime(),
                 request.description(),
-                request.participantType(),
-                request.isDDay()
+                request.participantType()
         );
         return CalendarResponse.from(event);
     }

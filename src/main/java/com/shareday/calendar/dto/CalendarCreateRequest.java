@@ -26,8 +26,5 @@ public record CalendarCreateRequest(
         String description,
 
         @NotNull(message = "참여자 유형은 필수입니다.")
-        ParticipantType participantType,
-
-        @NotNull(message = "D-Day 여부는 필수입니다.")
-        Boolean isDDay
+        ParticipantType participantType
 ) {}

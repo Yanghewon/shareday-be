@@ -12,6 +12,5 @@ public record CalendarUpdateRequest(
         LocalDateTime startTime,
         LocalDateTime endTime,
         String description,
-        ParticipantType participantType,
-        boolean isDDay
+        ParticipantType participantType
 ) {}

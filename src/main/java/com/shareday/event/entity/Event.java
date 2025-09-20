@@ -38,17 +38,9 @@ public class Event {
     @Column(nullable = false)
     private LocalDateTime endTime;
 
-    @Column(nullable = false, length = 100)
-    private String createdBy;
-
-    private String participants;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ParticipantType type;
-
-    @Column(nullable = false)
-    private Boolean isDday = false;
+    private ParticipantType participantType;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

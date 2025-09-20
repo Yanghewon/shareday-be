@@ -27,12 +27,6 @@ public class Dday {
     @NotNull(message = "날짜는 필수 입력 값입니다.")
     private LocalDate targetDate;
 
-    @Column(nullable = false)
-    private boolean isDday = true;
-
-    @Size(max = 200, message = "메모는 200자 이내여야 합니다.")
-    private String memo;
-
     // 로그인 사용자 기준
     @NotNull
     private Long userId;

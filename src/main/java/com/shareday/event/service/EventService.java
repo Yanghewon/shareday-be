@@ -15,15 +15,15 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
-    public List<EventResponse> getEvents(Long calendarId, LocalDate start, LocalDate end) {
-        return eventRepository.findByEventDateBetweenAndCoupleId(start, end, calendarId).stream()
+    public List<EventResponse> getEvents(Long coupleId, LocalDate start, LocalDate end) {
+        return eventRepository.findByEventDateBetweenAndCoupleId(start, end, coupleId).stream()
                 .map(this::toResponse)
                 .toList();
     }
 
-    public EventResponse createEvent(Long calendarId, EventRequest request) {
+    public EventResponse createEvent(EventRequest request) {
         Event event = Event.builder()
-                .coupleId(calendarId)
+                .coupleId(request.coupleId())
                 .userId(request.userId())
                 .title(request.title())
                 .description(request.description())
@@ -36,7 +36,7 @@ public class EventService {
         return toResponse(eventRepository.save(event));
     }
 
-    public EventResponse updateEvent(Long calendarId, Long eventId, EventUpdateRequest request) {
+    public EventResponse updateEvent(Long eventId, EventUpdateRequest request) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
 

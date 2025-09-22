@@ -9,8 +9,10 @@ import java.time.LocalDateTime;
 
 public record EventRequest(
 
+        @NotNull(message = "커플 ID는 필수입니다.")
         Long coupleId,
 
+        @NotNull(message = "사용자 ID는 필수입니다.")
         Long userId,
 
         @NotBlank(message = "제목은 비어 있을 수 없습니다.")

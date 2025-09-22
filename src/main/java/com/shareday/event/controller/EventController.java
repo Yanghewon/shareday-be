@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @Tag(name = "이벤트 컨트롤러", description = "일정 이벤트 관리 API")
-@RequestMapping("/api/events")
+@RequestMapping("/api/calendars/{calendarId}/events")
 public class EventController {
 
     private final EventService eventService;
@@ -26,18 +26,19 @@ public class EventController {
     }
 
     @GetMapping
-    @Operation(summary = "이벤트 목록 조회", description = "커플 ID와 기간으로 일정을 조회합니다.")
+    @Operation(summary = "이벤트 목록 조회", description = "캘린더 ID와 기간으로 일정을 조회합니다.")
     public ResponseEntity<ApiResponse<List<EventResponse>>> getEvents(
-            @RequestParam Long coupleId,
+            @PathVariable Long calendarId,
             @RequestParam LocalDate start,
             @RequestParam LocalDate end
     ) {
-        return ResponseEntity.ok(ApiResponse.ok(eventService.getEvents(coupleId, start, end)));
+        return ResponseEntity.ok(ApiResponse.ok(eventService.getEvents(calendarId, start, end)));
     }
 
     @PostMapping
     @Operation(summary = "이벤트 생성", description = "새로운 일정을 등록합니다.")
     public ResponseEntity<ApiResponse<EventResponse>> createEvent(
+            @PathVariable Long calendarId,
             @Valid @RequestBody EventRequest request
     ) {
         return ResponseEntity.ok(ApiResponse.ok(eventService.createEvent(request)));
@@ -46,6 +47,7 @@ public class EventController {
     @PatchMapping("/{eventId}")
     @Operation(summary = "이벤트 수정", description = "이벤트 ID로 일정을 수정합니다.")
     public ResponseEntity<ApiResponse<EventResponse>> updateEvent(
+            @PathVariable Long calendarId,
             @PathVariable Long eventId,
             @Valid @RequestBody EventUpdateRequest request
     ) {
@@ -55,6 +57,7 @@ public class EventController {
     @DeleteMapping("/{eventId}")
     @Operation(summary = "이벤트 삭제", description = "이벤트 ID로 일정을 삭제합니다.")
     public ResponseEntity<ApiResponse<Void>> deleteEvent(
+            @PathVariable Long calendarId,
             @PathVariable Long eventId
     ) {
         eventService.deleteEvent(eventId);

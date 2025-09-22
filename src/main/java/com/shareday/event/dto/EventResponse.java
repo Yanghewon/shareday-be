@@ -14,4 +14,3 @@ public record EventResponse(
         LocalDateTime endTime,
         ParticipantType participantType
 ) {}
-

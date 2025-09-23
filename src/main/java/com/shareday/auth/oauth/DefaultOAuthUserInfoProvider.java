@@ -8,20 +8,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
+
 import java.util.Map;
 
 @Component
 public class DefaultOAuthUserInfoProvider implements OAuthUserInfoProvider {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+
+    public DefaultOAuthUserInfoProvider(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     @Override
     public OAuthUserInfo getUserInfo(ProviderType provider, String accessToken) {
         return switch (provider) {
-            case ProviderType.google -> fetchGoogleUser(accessToken);
-            case ProviderType.naver -> fetchNaverUser(accessToken);
-            case ProviderType.kakao -> fetchKakaoUser(accessToken);
-            default -> throw new IllegalArgumentException("지원하지 않는 provider: " + provider);
+            case google -> fetchGoogleUser(accessToken);
+            case naver -> fetchNaverUser(accessToken);
+            case kakao -> fetchKakaoUser(accessToken);
         };
     }
 

@@ -32,3 +32,4 @@ jobs:
 
       - name: Build (skip tests)
         run: ./gradlew clean build -x test --stacktrace
+

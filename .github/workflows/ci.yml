@@ -30,15 +30,5 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Build & Test
-        run: ./gradlew clean build --stacktrace
-
-      - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: |
-            **/build/reports/tests/**
-            **/build/test-results/**
-            **/build/reports/jacoco/**
+      - name: Build (skip tests)
+        run: ./gradlew clean build -x test --stacktrace

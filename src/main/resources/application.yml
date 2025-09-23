@@ -7,30 +7,20 @@ spring:
     username: root
     password: gPdnjs75312@
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
-      ddl-auto: create-drop   # 테스트할 때 DB 스키마 자동 생성/삭제
+      ddl-auto: none   # 운영/개발에서는 drop 안 되게 update 사용
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.MySQLDialect  # 최신 Hibernate 권장
+    open-in-view: false  # Lazy 로딩 시 안전하게
+
   threads:
     virtual:
       enabled: true
-      services:
-        mysql:
-          image: mysql:8.0
-          env:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: shareday
-          ports:
-            - 3306:3306
-          options: >-
-            --health-cmd="mysqladmin ping -h localhost"
-            --health-interval=10s
-            --health-timeout=5s
-            --health-retries=3
 
   security:
     oauth2:

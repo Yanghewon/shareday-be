@@ -7,21 +7,16 @@ spring:
     username: root
     password: gPdnjs75312@
     driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
-      ddl-auto: none   # 운영/개발에서는 drop 안 되게 update 사용
-    show-sql: true
+      ddl-auto: none      # 개발 환경에서만 사용! (create, update, validate 등)
+    show-sql: true          # 콘솔에 SQL 출력
     properties:
       hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect  # 최신 Hibernate 권장
-    open-in-view: false  # Lazy 로딩 시 안전하게
-
+        format_sql: true    # SQL 보기 좋게 출력
   threads:
     virtual:
       enabled: true
-
   security:
     oauth2:
       client:

@@ -9,14 +9,29 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: none      # 개발 환경에서만 사용! (create, update, validate 등)
-    show-sql: true          # 콘솔에 SQL 출력
+      ddl-auto: create-drop   # 테스트할 때 DB 스키마 자동 생성/삭제
+    show-sql: true
     properties:
       hibernate:
-        format_sql: true    # SQL 보기 좋게 출력
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
   threads:
     virtual:
       enabled: true
+      services:
+        mysql:
+          image: mysql:8.0
+          env:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: shareday
+          ports:
+            - 3306:3306
+          options: >-
+            --health-cmd="mysqladmin ping -h localhost"
+            --health-interval=10s
+            --health-timeout=5s
+            --health-retries=3
+
   security:
     oauth2:
       client:

@@ -5,7 +5,7 @@ on:
     branches: [ dev, main ]
     types: [opened, reopened, ready_for_review, synchronize]
   push:
-    branches: [ dev ]
+    branches: [ main ]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -32,3 +32,4 @@ jobs:
 
       - name: Build (skip tests)
         run: ./gradlew clean build -x test --stacktrace
+

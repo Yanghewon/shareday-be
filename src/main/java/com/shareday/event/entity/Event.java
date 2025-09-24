@@ -20,8 +20,8 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long eventId;
 
-    @Column(nullable = false)
-    private Long coupleId;
+//    @Column(nullable = false)
+//    private Long coupleId;
 
     @Column(nullable = false)
     private Long userId;

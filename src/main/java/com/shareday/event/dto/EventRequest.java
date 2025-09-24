@@ -1,5 +1,6 @@
 package com.shareday.event.dto;
 
+import com.shareday.common.annotaion.ValidEnum;
 import com.shareday.event.enums.ParticipantType;
 import jakarta.validation.constraints.*;
 
@@ -7,6 +8,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record EventRequest(
+
+        @NotNull(message = "커플 ID는 필수입니다.")
+        Long coupleId,
 
         @NotNull(message = "사용자 ID는 필수입니다.")
         Long userId,
@@ -28,5 +32,6 @@ public record EventRequest(
         LocalDateTime endTime,
 
         @NotNull(message = "참여자 유형은 필수입니다.")
+        @ValidEnum(enumClass = ParticipantType.class, message = "참여자 값이 올바르지 않습니다.")
         ParticipantType participantType
 ) {}

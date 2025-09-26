@@ -12,5 +12,6 @@ public record EventResponse(
         LocalDate eventDate,
         LocalDateTime startTime,
         LocalDateTime endTime,
-        ParticipantType participantType
+        ParticipantType participantType,
+        Boolean isDday
 ) {}

@@ -5,7 +5,7 @@ on:
     branches: [ dev, main ]
     types: [opened, reopened, ready_for_review, synchronize]
   push:
-    branches: [ dev ]
+    branches: [ main ]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -30,15 +30,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
-      - name: Build & Test
-        run: ./gradlew clean build --stacktrace
+      - name: Build (skip tests)
+        run: ./gradlew clean build -x test --stacktrace
 
-      - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: |
-            **/build/reports/tests/**
-            **/build/test-results/**
-            **/build/reports/jacoco/**

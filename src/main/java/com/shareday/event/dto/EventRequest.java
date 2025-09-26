@@ -1,13 +1,15 @@
 package com.shareday.event.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import com.shareday.common.annotaion.ValidEnum;
+import com.shareday.event.enums.ParticipantType;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record EventRequest(
 
+        @NotNull(message = "사용자 ID는 필수입니다.")
         Long userId,
 
         @NotBlank(message = "제목은 비어 있을 수 없습니다.")
@@ -18,10 +20,15 @@ public record EventRequest(
         String description,
 
         @NotNull(message = "이벤트 날짜는 필수입니다.")
+        @FutureOrPresent(message = "이벤트 날짜는 오늘 또는 미래여야 합니다.")
         LocalDate eventDate,
 
-        String type,
+        @NotNull(message = "시작 시간은 필수입니다.")
+        LocalDateTime startTime,
 
-        @NotNull(message = "D-Day 여부는 필수입니다.")
-        Boolean isDday
+        @NotNull(message = "종료 시간은 필수입니다.")
+        LocalDateTime endTime,
+
+        @NotNull(message = "참여자 유형은 필수입니다.")
+        ParticipantType participantType
 ) {}

@@ -1,6 +1,5 @@
 package com.shareday.event.controller;
 
-
 import com.shareday.common.api.ApiResponse;
 import com.shareday.event.dto.EventRequest;
 import com.shareday.event.dto.EventResponse;
@@ -8,6 +7,7 @@ import com.shareday.event.dto.EventUpdateRequest;
 import com.shareday.event.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @Tag(name = "이벤트 컨트롤러", description = "일정 이벤트 관리 API")
-@RequestMapping("/api/calendars/{calendarId}/events")
+@RequestMapping("/api/events")
 public class EventController {
 
     private final EventService eventService;
@@ -26,38 +26,34 @@ public class EventController {
     }
 
     @GetMapping
-    @Operation(summary = "이벤트 목록 조회", description = "캘린더 ID와 기간으로 일정을 조회합니다.")
+    @Operation(summary = "이벤트 목록 조회", description = "기간으로 일정을 조회합니다.")
     public ResponseEntity<ApiResponse<List<EventResponse>>> getEvents(
-            @PathVariable Long calendarId,
             @RequestParam LocalDate start,
             @RequestParam LocalDate end
     ) {
-        return ResponseEntity.ok(ApiResponse.ok(eventService.getEvents(calendarId, start, end)));
+        return ResponseEntity.ok(ApiResponse.ok(eventService.getEvents(start, end)));
     }
 
     @PostMapping
     @Operation(summary = "이벤트 생성", description = "새로운 일정을 등록합니다.")
     public ResponseEntity<ApiResponse<EventResponse>> createEvent(
-            @PathVariable Long calendarId,
-            @RequestBody EventRequest request
+            @Valid @RequestBody EventRequest request
     ) {
-        return ResponseEntity.ok(ApiResponse.ok(eventService.createEvent(calendarId, request)));
+        return ResponseEntity.ok(ApiResponse.ok(eventService.createEvent(request)));
     }
 
     @PatchMapping("/{eventId}")
     @Operation(summary = "이벤트 수정", description = "이벤트 ID로 일정을 수정합니다.")
     public ResponseEntity<ApiResponse<EventResponse>> updateEvent(
-            @PathVariable Long calendarId,
             @PathVariable Long eventId,
-            @RequestBody EventUpdateRequest request
+            @Valid @RequestBody EventUpdateRequest request
     ) {
-        return ResponseEntity.ok(ApiResponse.ok(eventService.updateEvent(calendarId, eventId, request)));
+        return ResponseEntity.ok(ApiResponse.ok(eventService.updateEvent(eventId, request)));
     }
 
     @DeleteMapping("/{eventId}")
     @Operation(summary = "이벤트 삭제", description = "이벤트 ID로 일정을 삭제합니다.")
     public ResponseEntity<ApiResponse<Void>> deleteEvent(
-            @PathVariable Long calendarId,
             @PathVariable Long eventId
     ) {
         eventService.deleteEvent(eventId);

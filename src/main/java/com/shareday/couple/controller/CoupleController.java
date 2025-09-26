@@ -1,6 +1,5 @@
 package com.shareday.couple.controller;
 
-import com.shareday.couple.dto.CoupleRequest;
 import com.shareday.couple.dto.CoupleResponse;
 import com.shareday.couple.dto.InviteAcceptRequest;
 import com.shareday.couple.dto.InviteResponse;
@@ -22,19 +21,16 @@ public class CoupleController {
         this.coupleService = coupleService;
     }
 
-    //TODO:: 각 API가 무슨기능을 하는지 깃 이슈에 정리하기
-    @PostMapping
-    @Operation(summary = "커플 생성", description = "새로운 커플을 등록합니다.")
-    public ResponseEntity<ApiResponse<CoupleResponse>> create(@RequestBody CoupleRequest request) {
-        return ResponseEntity.ok(ApiResponse.ok(coupleService.create(request)));
+    @PostMapping("/invite")
+    @Operation(summary = "초대 코드 생성", description = "커플 초대 코드를 생성합니다.")
+    public ResponseEntity<ApiResponse<InviteResponse>> invite() {
+        return ResponseEntity.ok(ApiResponse.ok(coupleService.generateInviteCode()));
     }
 
-    @PatchMapping("/{coupleId}")
-    @Operation(summary = "커플 수정", description = "커플 ID에 해당하는 커플 정보를 수정합니다. (교제 시작일)")
-    public ResponseEntity<ApiResponse<CoupleResponse>> update(
-            @PathVariable Long coupleId,
-            @RequestBody CoupleRequest request) {
-        return ResponseEntity.ok(ApiResponse.ok(coupleService.update(coupleId, request)));
+    @PostMapping("/accept")
+    @Operation(summary = "초대 코드 수락", description = "초대 코드를 이용해 커플을 확정합니다.")
+    public ResponseEntity<ApiResponse<CoupleResponse>> accept(@RequestBody InviteAcceptRequest request) {
+        return ResponseEntity.ok(ApiResponse.ok(coupleService.acceptInvite(request)));
     }
 
     @DeleteMapping("/{coupleId}")
@@ -42,18 +38,5 @@ public class CoupleController {
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long coupleId) {
         coupleService.delete(coupleId);
         return ResponseEntity.ok(ApiResponse.ok(null));
-    }
-
-    @PostMapping("/{coupleId}/invite")
-    @Operation(summary = "초대 코드 생성", description = "커플 초대 코드를 생성합니다.")
-    public ResponseEntity<ApiResponse<InviteResponse>> invite(@PathVariable Long coupleId) {
-        return ResponseEntity.ok(ApiResponse.ok(coupleService.generateInviteCode(coupleId)));
-    }
-
-
-    @PostMapping("/accept")
-    @Operation(summary = "초대 코드 수락", description = "초대 코드를 이용해 커플을 수락합니다.")
-    public ResponseEntity<ApiResponse<CoupleResponse>> accept(@RequestBody InviteAcceptRequest request) {
-        return ResponseEntity.ok(ApiResponse.ok(coupleService.acceptInvite(request)));
     }
 }

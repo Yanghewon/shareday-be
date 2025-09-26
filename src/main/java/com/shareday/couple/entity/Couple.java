@@ -1,13 +1,9 @@
 package com.shareday.couple.entity;
 
-import com.shareday.event.entity.Event;
-import com.shareday.user.entity.User;
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
+import lombok.*;
 
 @Entity
 @Table(name = "couple")
@@ -22,28 +18,26 @@ public class Couple {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long coupleId;
 
+    @Column(name = "start_date")
     private LocalDate startDate;
 
-    // ✅ 초대 코드 (삭제되지 않고 계속 유지)
-    @Column(unique = true, length = 20)
+    @Column(unique = true, length = 20, name = "invite_code")
     private String inviteCode;
 
-    @OneToMany(mappedBy = "couple", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> users;
-
-    @OneToMany(mappedBy = "couple", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Event> events;
-
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "is_accepted", nullable = false)
+    private boolean accepted;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.accepted = false;
     }
 
     @PreUpdate

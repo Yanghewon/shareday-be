@@ -1,6 +1,7 @@
 package com.shareday.event.entity;
 
-import com.shareday.event.enums.ParticipantType;
+import com.shareday.couple.entity.Couple;
+import com.shareday.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,34 +21,26 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long eventId;
 
-    private Long coupleId;
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "couple_id")
+    private Couple couple;
 
-    @Column(nullable = false, length = 100)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Column(length = 100)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false)
     private LocalDate eventDate;
 
-    @Column(nullable = false)
-    private LocalDateTime startTime;
+    private String type;
 
     @Column(nullable = false)
-    private LocalDateTime endTime;
-
-    @Column(nullable = false, length = 100)
-    private String createdBy;
-
-    private String participants;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ParticipantType type;
-
-    @Column(nullable = false)
+    @Builder.Default
     private Boolean isDday = false;
 
     @Column(nullable = false, updatable = false)

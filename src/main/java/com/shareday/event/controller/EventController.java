@@ -26,14 +26,13 @@ public class EventController {
     }
 
     @GetMapping
-    @Operation(summary = "이벤트 목록 조회", description = "커플 ID와 기간으로 일정을 조회합니다.")
+    @Operation(summary = "이벤트 목록 조회", description = "커플 ID로 일정을 조회합니다.")
     public ResponseEntity<ApiResponse<List<EventResponse>>> getEvents(
-            @RequestParam Long coupleId,
-            @RequestParam LocalDate start,
-            @RequestParam LocalDate end
+            @RequestParam Long coupleId
     ) {
-        return ResponseEntity.ok(ApiResponse.ok(eventService.getEvents(coupleId, start, end)));
+        return ResponseEntity.ok(ApiResponse.ok(eventService.getEvents(coupleId)));
     }
+
 
     @PostMapping
     @Operation(summary = "이벤트 생성", description = "새로운 일정을 등록합니다.")

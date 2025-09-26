@@ -51,11 +51,18 @@ public class Event {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    private Boolean isDday = false;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        if (this.isDday == null) {
+            this.isDday = false;
+        }
     }
+
 
     @PreUpdate
     protected void onUpdate() {

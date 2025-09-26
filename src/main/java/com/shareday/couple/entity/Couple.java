@@ -1,9 +1,14 @@
 package com.shareday.couple.entity;
 
+import com.shareday.event.entity.Event;
+import com.shareday.user.entity.User;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.time.LocalDate;
 import lombok.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Entity
 @Table(name = "couple")
 @Getter
@@ -19,9 +24,15 @@ public class Couple {
 
     private LocalDate startDate;
 
-    // 초대 코드 (삭제되지 않고 계속 유지)
+    // ✅ 초대 코드 (삭제되지 않고 계속 유지)
     @Column(unique = true, length = 20)
     private String inviteCode;
+
+    @OneToMany(mappedBy = "couple", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<User> users;
+
+    @OneToMany(mappedBy = "couple", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Event> events;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

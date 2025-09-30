@@ -52,6 +52,7 @@ public class Event {
     private LocalDateTime updatedAt;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isDday = false;
 
     @PrePersist

@@ -1,3 +1,4 @@
+/*
 package com.shareday.auth.entity;
 
 import com.shareday.auth.enums.ProviderType;
@@ -55,3 +56,4 @@ public class User {
         this.nickname = nickname;
     }
 }
+*/

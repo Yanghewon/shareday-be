@@ -1,3 +1,4 @@
+/*
 package com.shareday.auth.repository;
 
 import com.shareday.auth.entity.User;
@@ -15,4 +16,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // 이메일 존재 여부만 확인 (중복 체크 시 유용)
     boolean existsByEmail(String email);
-}
+}*/

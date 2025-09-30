@@ -3,11 +3,11 @@ package com.shareday.auth.service;
 import com.shareday.auth.dto.OAuthUserInfo;
 import com.shareday.auth.dto.SocialSignUpRequest;
 import com.shareday.auth.dto.SocialSignUpResponse;
-import com.shareday.auth.entity.User;
+import com.shareday.auth.entity.Auth;
+import com.shareday.auth.enums.ProviderType;
 import com.shareday.auth.oauth.JwtProvider;
 import com.shareday.auth.oauth.OAuthUserInfoProvider;
-
-import com.shareday.auth.repository.UserRepository;
+import com.shareday.auth.repository.AuthRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,40 +15,45 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final OAuthUserInfoProvider oAuthUserInfoProvider;
-    private final UserRepository userRepository;
+    private final AuthRepository authRepository;
     private final JwtProvider jwtProvider;
 
     public AuthService(OAuthUserInfoProvider oAuthUserInfoProvider,
-                       UserRepository userRepository,
+                       AuthRepository authRepository,
                        JwtProvider jwtProvider) {
         this.oAuthUserInfoProvider = oAuthUserInfoProvider;
-        this.userRepository = userRepository;
+        this.authRepository = authRepository;
         this.jwtProvider = jwtProvider;
     }
 
     @Transactional
     public SocialSignUpResponse socialSignUp(SocialSignUpRequest request) {
-        // 1. provider에서 사용자 정보 조회
         OAuthUserInfo userInfo =
                 oAuthUserInfoProvider.getUserInfo(request.provider(), request.accessToken());
 
-        // 2. 사용자 존재 여부 확인
-        User user = userRepository.findByEmail(userInfo.email())
-                .orElseGet(() -> {
-                    User newUser = new User(userInfo.email(), userInfo.nickname(), userInfo.provider());
-                    return userRepository.save(newUser);
-                });
+        if (userInfo == null || userInfo.email() == null || userInfo.email().isBlank()) {
+            throw new IllegalArgumentException("유효한 이메일을 제공하지 않는 소셜 계정입니다.");
+        }
 
-        boolean isNewUser = user.getCreatedAt().equals(user.getUpdatedAt());
+        var existing = authRepository.findByEmail(userInfo.email());
 
-        // 3. JWT 발급
-        String token = jwtProvider.generateToken(user.getId(), user.getEmail());
+        Auth auth = existing.orElseGet(() -> {
+            // userInfo.provider()가 이미 ProviderType이면 그대로 사용
+            ProviderType provider = (userInfo.provider() instanceof ProviderType p)
+                    ? p
+                    : ProviderType.valueOf(userInfo.provider().toString().toUpperCase());
+            return authRepository.save(new Auth(userInfo.email(), userInfo.nickname(), provider));
+        });
+
+        boolean isNewUser = existing.isEmpty();
+
+        String token = jwtProvider.generateToken(auth.getId(), auth.getEmail());
 
         return new SocialSignUpResponse(
-                user.getId(),
-                user.getEmail(),
-                user.getNickname(),
-                userInfo.provider(),
+                auth.getId(),
+                auth.getEmail(),
+                auth.getNickname(),
+                auth.getProvider(),
                 token,
                 isNewUser
         );

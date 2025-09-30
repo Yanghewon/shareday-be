@@ -15,8 +15,8 @@ public class EventService {
 
     private final EventRepository eventRepository;
 
-    public List<EventResponse> getEvents(Long coupleId, LocalDate start, LocalDate end) {
-        return eventRepository.findByEventDateBetweenAndCoupleId(start, end, coupleId).stream()
+    public List<EventResponse> getEvents(Long coupleId) {
+        return eventRepository.findByCoupleId(coupleId).stream()
                 .map(this::toResponse)
                 .toList();
     }
@@ -31,6 +31,7 @@ public class EventService {
                 .startTime(request.startTime())
                 .endTime(request.endTime())
                 .participantType(request.participantType())
+                .isDday(request.isDday() != null ? request.isDday() : false) // ✅ 기본값 처리
                 .build();
 
         return toResponse(eventRepository.save(event));
@@ -62,7 +63,8 @@ public class EventService {
                 e.getEventDate(),
                 e.getStartTime(),
                 e.getEndTime(),
-                e.getParticipantType()
+                e.getParticipantType(),
+                e.getIsDday()
         );
     }
 }

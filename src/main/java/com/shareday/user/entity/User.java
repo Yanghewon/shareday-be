@@ -1,5 +1,6 @@
-package com.shareday.auth.entity;
+package com.shareday.user.entity;
 
+import com.shareday.auth.entity.Auth;
 import com.shareday.auth.enums.ProviderType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,35 +9,36 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-@Getter @Setter
+@Entity
+@Table(name = "users")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Builder
-@Table(name = "auth") // 필요시 다른 테이블명으로 변경
-public class Auth {
+public class User {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
     private String email;
-
     private String nickname;
+    private String kakaoId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProviderType provider;
 
+    @OneToOne
+    @JoinColumn(name = "auth_id")
+    private Auth auth;
+
     @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    public Auth(String email, String nickname, ProviderType provider) {
-        this.email = email;
-        this.nickname = nickname;
-        this.provider = provider;
-    }
 }

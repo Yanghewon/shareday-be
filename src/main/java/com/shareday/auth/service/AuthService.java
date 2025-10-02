@@ -3,28 +3,29 @@ package com.shareday.auth.service;
 import com.shareday.auth.dto.OAuthUserInfo;
 import com.shareday.auth.dto.SocialSignUpRequest;
 import com.shareday.auth.dto.SocialSignUpResponse;
+import com.shareday.auth.dto.SocialLoginRequest;
+import com.shareday.auth.dto.SocialLoginResponse;
 import com.shareday.auth.entity.Auth;
 import com.shareday.auth.enums.ProviderType;
 import com.shareday.auth.oauth.JwtProvider;
 import com.shareday.auth.oauth.OAuthUserInfoProvider;
 import com.shareday.auth.repository.AuthRepository;
+import com.shareday.user.entity.User;
+import com.shareday.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     private final OAuthUserInfoProvider oAuthUserInfoProvider;
     private final AuthRepository authRepository;
     private final JwtProvider jwtProvider;
-
-    public AuthService(OAuthUserInfoProvider oAuthUserInfoProvider,
-                       AuthRepository authRepository,
-                       JwtProvider jwtProvider) {
-        this.oAuthUserInfoProvider = oAuthUserInfoProvider;
-        this.authRepository = authRepository;
-        this.jwtProvider = jwtProvider;
-    }
+    private final UserRepository userRepository;
 
     @Transactional
     public SocialSignUpResponse socialSignUp(SocialSignUpRequest request) {
@@ -38,7 +39,6 @@ public class AuthService {
         var existing = authRepository.findByEmail(userInfo.email());
 
         Auth auth = existing.orElseGet(() -> {
-            // userInfo.provider()가 이미 ProviderType이면 그대로 사용
             ProviderType provider = (userInfo.provider() instanceof ProviderType p)
                     ? p
                     : ProviderType.valueOf(userInfo.provider().toString().toUpperCase());
@@ -46,6 +46,16 @@ public class AuthService {
         });
 
         boolean isNewUser = existing.isEmpty();
+
+        if (isNewUser) {
+            User user = User.builder()
+                    .auth(auth)
+                    .email(auth.getEmail())
+                    .nickname(auth.getNickname())
+                    .provider(auth.getProvider())
+                    .build();
+            userRepository.save(user);
+        }
 
         String token = jwtProvider.generateToken(auth.getId(), auth.getEmail());
 
@@ -57,5 +67,80 @@ public class AuthService {
                 token,
                 isNewUser
         );
+    }
+
+    @Transactional
+    public SocialLoginResponse kakaoLogin(SocialLoginRequest request) {
+        OAuthUserInfo userInfo =
+                oAuthUserInfoProvider.getUserInfo(ProviderType.KAKAO, request.accessToken());
+
+        if (userInfo == null || userInfo.email() == null || userInfo.email().isBlank()) {
+            throw new IllegalArgumentException("유효한 이메일을 제공하지 않는 소셜 계정입니다.");
+        }
+
+        var existingAuth = authRepository.findByEmail(userInfo.email());
+
+        Auth auth = existingAuth.orElseGet(() ->
+                authRepository.save(new Auth(userInfo.email(), userInfo.nickname(), ProviderType.KAKAO))
+        );
+
+        boolean isNewUser = existingAuth.isEmpty();
+
+        User user = userRepository.findByKakaoId(userInfo.providerId()).orElseGet(() -> {
+            User newUser = User.builder()
+                    .kakaoId(userInfo.providerId())
+                    .email(userInfo.email())
+                    .nickname(userInfo.nickname())
+                    .provider(auth.getProvider())
+                    .auth(auth)
+                    .build();
+            return userRepository.save(newUser);
+        });
+
+        String token = jwtProvider.generateToken(auth.getId(), auth.getEmail());
+
+        return SocialLoginResponse.from(user, token, isNewUser);
+    }
+
+    /**
+     * ✅ OAuth2 로그인 시 (SecurityConfig successHandler에서 호출)
+     * 이메일 기반으로 Auth/User 저장 또는 조회 후 User 반환
+     */
+    @Transactional
+    public User saveOrUpdate(String email, String nickname, ProviderType provider, String providerId) {
+        log.info("🔎 saveOrUpdate called with email={}, nickname={}, provider={}, providerId={}",
+                email, nickname, provider, providerId);
+
+        Auth authEntity = authRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    log.info("✅ 신규 Auth 생성 -> email={}", email);
+                    Auth newAuth = Auth.builder()
+                            .email(email)
+                            .nickname(nickname)
+                            .provider(provider)
+                            .build();
+                    return authRepository.saveAndFlush(newAuth);
+                });
+
+        User userEntity = userRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    log.info("✅ 신규 User 생성 -> email={}", email);
+                    User newUser = User.builder()
+                            .email(email)
+                            .nickname(nickname)
+                            .auth(authEntity)
+                            .provider(provider)
+                            .kakaoId(provider == ProviderType.KAKAO ? providerId : null)
+                            .build();
+                    User saved = userRepository.saveAndFlush(newUser); // flush 강제 실행
+                    log.info("✅ User 저장 완료 -> id={}, email={}", saved.getId(), saved.getEmail());
+                    return saved;
+                });
+
+        // ✅ JWT 발급 (여기서는 단순 로그만, SecurityConfig에서 최종 발급)
+        String jwtToken = jwtProvider.generateToken(userEntity.getId(), userEntity.getEmail());
+        log.info("✅ JWT 발급 완료 -> token={}", jwtToken);
+
+        return userEntity;
     }
 }

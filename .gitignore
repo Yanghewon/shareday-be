@@ -35,3 +35,15 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# 환경 변수 파일
+.env
+
+# IDE 설정 파일
+.idea/
+*.iml
+
+# 빌드 산출물
+/build/
+/out/
+/target/

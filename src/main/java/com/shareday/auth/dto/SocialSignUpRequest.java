@@ -8,5 +8,5 @@ public record SocialSignUpRequest(
         ProviderType provider,
 
         @NotBlank(message = "accessToken은 필수입니다.")
-        String accessToken // 또는 authorizationCode
+        String accessToken
 ) { }

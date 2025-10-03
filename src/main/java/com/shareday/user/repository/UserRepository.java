@@ -2,17 +2,10 @@ package com.shareday.user.repository;
 
 import com.shareday.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
+@Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
-    // ✅ PK(userId) 기준 조회
-    Optional<User> findByUserId(Long userId);
-
-    // ✅ 카카오 ID로 조회
-    Optional<User> findByKakaoId(String kakaoId);
-
-    // ✅ 이메일로 조회
-    Optional<User> findByEmail(String email);
+    // 필요하다면 커스텀 메서드 추가 가능
+    // Optional<User> findByEmail(String email);
 }

@@ -1,15 +1,18 @@
 package com.shareday.event.service;
 
-import com.shareday.dday.entity.Dday;
-import com.shareday.dday.repository.DdayRepository;
+import com.shareday.couple.entity.Couple;
+import com.shareday.couple.repository.CoupleRepository;
 import com.shareday.event.dto.EventRequest;
 import com.shareday.event.dto.EventResponse;
 import com.shareday.event.dto.EventUpdateRequest;
 import com.shareday.event.entity.Event;
 import com.shareday.event.repository.EventRepository;
+import com.shareday.user.entity.User;
+import com.shareday.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -17,89 +20,84 @@ import java.util.List;
 public class EventService {
 
     private final EventRepository eventRepository;
-    private final DdayRepository ddayRepository;
+    private final CoupleRepository coupleRepository;
+    private final UserRepository userRepository;
 
-    public List<EventResponse> getEvents(Long coupleId) {
-        return eventRepository.findByCoupleId(coupleId).stream()
+    /**
+     * 특정 커플의 일정 조회 (기간별)
+     */
+    public List<EventResponse> getEvents(Long coupleId, LocalDate start, LocalDate end) {
+        return eventRepository.findByCouple_CoupleIdAndEventDateBetween(coupleId, start, end)
+                .stream()
                 .map(this::toResponse)
                 .toList();
     }
 
-    public EventResponse createEvent(EventRequest request) {
-        // 1. Event 생성
+    /**
+     * 이벤트 생성
+     */
+    public EventResponse createEvent(Long coupleId, EventRequest request) {
+        Couple couple = coupleRepository.findById(coupleId)
+                .orElseThrow(() -> new IllegalArgumentException("커플을 찾을 수 없습니다."));
+
+        User user = userRepository.findById(request.userId())
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
         Event event = Event.builder()
-                .coupleId(request.coupleId())
-                .userId(request.userId())
+                .couple(couple)
+                .user(user)
                 .title(request.title())
                 .description(request.description())
                 .eventDate(request.eventDate())
-                .startTime(request.startTime())
-                .endTime(request.endTime())
-                .participantType(request.participantType())
-                .isDday(request.isDday() != null ? request.isDday() : false)
+                .type(request.type())
+                .isDday(request.isDday())
                 .build();
 
-        Event savedEvent = eventRepository.save(event);
-
-        // 2. isDday = true면 Dday도 생성
-        if (Boolean.TRUE.equals(savedEvent.getIsDday())) {
-            Dday dday = Dday.builder()
-                    .title(savedEvent.getTitle())
-                    .targetDate(savedEvent.getEventDate())
-                    .userId(savedEvent.getUserId())
-                    .build();
-            ddayRepository.save(dday);
-        }
-
-        return toResponse(savedEvent);
+        return toResponse(eventRepository.save(event));
     }
 
-    public EventResponse updateEvent(Long eventId, EventUpdateRequest request) {
+    /**
+     * 이벤트 수정
+     */
+    public EventResponse updateEvent(Long coupleId, Long eventId, EventUpdateRequest request) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+        if (!event.getCouple().getCoupleId().equals(coupleId)) {
+            throw new IllegalArgumentException("해당 커플의 이벤트가 아닙니다.");
+        }
 
         event.setTitle(request.title());
         event.setDescription(request.description());
         event.setEventDate(request.eventDate());
-        event.setStartTime(request.startTime());
-        event.setEndTime(request.endTime());
-        event.setParticipantType(request.participantType());
+        event.setType(request.type());
         event.setIsDday(request.isDday());
 
-        Event saved = eventRepository.save(event);
-
-        // isDday가 true로 바뀌면 Dday 생성
-        if (Boolean.TRUE.equals(saved.getIsDday())) {
-            boolean exists = ddayRepository.findAllByUserId(saved.getUserId()).stream()
-                    .anyMatch(d -> d.getTitle().equals(saved.getTitle()) && d.getTargetDate().equals(saved.getEventDate()));
-
-            if (!exists) {
-                Dday dday = Dday.builder()
-                        .title(saved.getTitle())
-                        .targetDate(saved.getEventDate())
-                        .userId(saved.getUserId())
-                        .build();
-                ddayRepository.save(dday);
-            }
-        }
-
-        return toResponse(saved);
+        return toResponse(eventRepository.save(event));
     }
 
+    /**
+     * 이벤트 삭제
+     */
     public void deleteEvent(Long eventId) {
         eventRepository.deleteById(eventId);
     }
 
+    /**
+     * Entity → DTO 변환
+     */
     private EventResponse toResponse(Event e) {
         return new EventResponse(
                 e.getEventId(),
+                e.getCouple().getCoupleId(),
+                e.getUser().getUserId(),
                 e.getTitle(),
                 e.getDescription(),
                 e.getEventDate(),
-                e.getStartTime(),
-                e.getEndTime(),
-                e.getParticipantType(),
-                e.getIsDday()
+                e.getType(),
+                e.getIsDday(),
+                e.getCreatedAt(),
+                e.getUpdatedAt()
         );
     }
 }

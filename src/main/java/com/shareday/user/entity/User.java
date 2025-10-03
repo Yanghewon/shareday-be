@@ -1,53 +1,68 @@
+<<<<<<<< HEAD:src/main/java/com/shareday/auth/entity/User.java
+/*
+package com.shareday.auth.entity;
+========
 package com.shareday.user.entity;
+>>>>>>>> 08d6ff6a8fd9b723af63fc9367fc21242abcbb42:src/main/java/com/shareday/user/entity/User.java
 
-import com.shareday.auth.entity.Auth;
 import com.shareday.auth.enums.ProviderType;
 import com.shareday.couple.entity.Couple;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id", unique = true)
     private Long userId;
 
-    @Column(unique = true) // 필요하다면 unique 제약 추가
-    private String email;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private ProviderType provider;
 
+    @Column(nullable = false, unique = true, length = 100)
+    private String providerId;
+
+    @Column(nullable = false, length = 50)
     private String nickname;
 
-    private String kakaoId;
+    private LocalDate birthDate;
 
-    @ManyToOne
+    @Column(length = 1)
+    private String gender; // M, F 등 한 글자 코드
+
+    @Column(unique = true, length = 100)
+    private String email;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "couple_id")
     private Couple couple;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ProviderType provider;
-
-    @OneToOne
-    @JoinColumn(name = "auth_id")
-    private Auth auth;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
+*/

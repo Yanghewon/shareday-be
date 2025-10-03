@@ -2,6 +2,7 @@ package com.shareday.user.entity;
 
 import com.shareday.auth.entity.Auth;
 import com.shareday.auth.enums.ProviderType;
+import com.shareday.couple.entity.Couple;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -20,11 +21,19 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "user_id", unique = true)
+    private Long userId;
 
+    @Column(unique = true) // 필요하다면 unique 제약 추가
     private String email;
+
     private String nickname;
+
     private String kakaoId;
+
+    @ManyToOne
+    @JoinColumn(name = "couple_id")
+    private Couple couple;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

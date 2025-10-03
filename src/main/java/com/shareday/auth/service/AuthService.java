@@ -27,6 +27,9 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
 
+    /**
+     * ✅ 소셜 회원가입
+     */
     @Transactional
     public SocialSignUpResponse socialSignUp(SocialSignUpRequest request) {
         OAuthUserInfo userInfo =
@@ -57,6 +60,7 @@ public class AuthService {
             userRepository.save(user);
         }
 
+        // ✅ JWT는 Auth 기준으로 발급
         String token = jwtProvider.generateToken(auth.getId(), auth.getEmail());
 
         return new SocialSignUpResponse(
@@ -69,6 +73,9 @@ public class AuthService {
         );
     }
 
+    /**
+     * ✅ 카카오 로그인
+     */
     @Transactional
     public SocialLoginResponse kakaoLogin(SocialLoginRequest request) {
         OAuthUserInfo userInfo =
@@ -97,13 +104,14 @@ public class AuthService {
             return userRepository.save(newUser);
         });
 
+        // ✅ JWT는 Auth 기준으로 발급
         String token = jwtProvider.generateToken(auth.getId(), auth.getEmail());
 
         return SocialLoginResponse.from(user, token, isNewUser);
     }
 
     /**
-     * ✅ OAuth2 로그인 시 (SecurityConfig successHandler에서 호출)
+     * ✅ OAuth2 로그인 (SecurityConfig successHandler에서 호출)
      * 이메일 기반으로 Auth/User 저장 또는 조회 후 User 반환
      */
     @Transactional
@@ -133,12 +141,12 @@ public class AuthService {
                             .kakaoId(provider == ProviderType.KAKAO ? providerId : null)
                             .build();
                     User saved = userRepository.saveAndFlush(newUser); // flush 강제 실행
-                    log.info("✅ User 저장 완료 -> id={}, email={}", saved.getId(), saved.getEmail());
+                    log.info("✅ User 저장 완료 -> authId={}, email={}", authEntity.getId(), saved.getEmail());
                     return saved;
                 });
 
-        // ✅ JWT 발급 (여기서는 단순 로그만, SecurityConfig에서 최종 발급)
-        String jwtToken = jwtProvider.generateToken(userEntity.getId(), userEntity.getEmail());
+        // ✅ JWT 발급 (Auth 기준)
+        String jwtToken = jwtProvider.generateToken(authEntity.getId(), authEntity.getEmail());
         log.info("✅ JWT 발급 완료 -> token={}", jwtToken);
 
         return userEntity;

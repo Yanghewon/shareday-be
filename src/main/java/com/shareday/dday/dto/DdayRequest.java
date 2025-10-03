@@ -10,5 +10,7 @@ public record DdayRequest(
         String title,
 
         @NotNull(message = "날짜는 필수입니다.")
-        LocalDate targetDate
+        LocalDate targetDate,
+
+        Long coupleId
 ) {}

@@ -1,12 +1,15 @@
 package com.shareday.event.service;
 
-import com.shareday.event.dto.*;
+import com.shareday.dday.entity.Dday;
+import com.shareday.dday.repository.DdayRepository;
+import com.shareday.event.dto.EventRequest;
+import com.shareday.event.dto.EventResponse;
+import com.shareday.event.dto.EventUpdateRequest;
 import com.shareday.event.entity.Event;
 import com.shareday.event.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -14,6 +17,7 @@ import java.util.List;
 public class EventService {
 
     private final EventRepository eventRepository;
+    private final DdayRepository ddayRepository;
 
     public List<EventResponse> getEvents(Long coupleId) {
         return eventRepository.findByCoupleId(coupleId).stream()
@@ -22,6 +26,7 @@ public class EventService {
     }
 
     public EventResponse createEvent(EventRequest request) {
+        // 1. Event 생성
         Event event = Event.builder()
                 .coupleId(request.coupleId())
                 .userId(request.userId())
@@ -31,10 +36,22 @@ public class EventService {
                 .startTime(request.startTime())
                 .endTime(request.endTime())
                 .participantType(request.participantType())
-                .isDday(request.isDday() != null ? request.isDday() : false) // ✅ 기본값 처리
+                .isDday(request.isDday() != null ? request.isDday() : false)
                 .build();
 
-        return toResponse(eventRepository.save(event));
+        Event savedEvent = eventRepository.save(event);
+
+        // 2. isDday = true면 Dday도 생성
+        if (Boolean.TRUE.equals(savedEvent.getIsDday())) {
+            Dday dday = Dday.builder()
+                    .title(savedEvent.getTitle())
+                    .targetDate(savedEvent.getEventDate())
+                    .userId(savedEvent.getUserId())
+                    .build();
+            ddayRepository.save(dday);
+        }
+
+        return toResponse(savedEvent);
     }
 
     public EventResponse updateEvent(Long eventId, EventUpdateRequest request) {
@@ -47,8 +64,26 @@ public class EventService {
         event.setStartTime(request.startTime());
         event.setEndTime(request.endTime());
         event.setParticipantType(request.participantType());
+        event.setIsDday(request.isDday());
 
-        return toResponse(eventRepository.save(event));
+        Event saved = eventRepository.save(event);
+
+        // isDday가 true로 바뀌면 Dday 생성
+        if (Boolean.TRUE.equals(saved.getIsDday())) {
+            boolean exists = ddayRepository.findAllByUserId(saved.getUserId()).stream()
+                    .anyMatch(d -> d.getTitle().equals(saved.getTitle()) && d.getTargetDate().equals(saved.getEventDate()));
+
+            if (!exists) {
+                Dday dday = Dday.builder()
+                        .title(saved.getTitle())
+                        .targetDate(saved.getEventDate())
+                        .userId(saved.getUserId())
+                        .build();
+                ddayRepository.save(dday);
+            }
+        }
+
+        return toResponse(saved);
     }
 
     public void deleteEvent(Long eventId) {

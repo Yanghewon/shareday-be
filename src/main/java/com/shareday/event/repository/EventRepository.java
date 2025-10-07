@@ -7,5 +7,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
-    List<Event> findByCoupleId(Long coupleId);
+    List<Event> findByCouple_CoupleIdAndEventDateBetween(Long coupleId, LocalDate start, LocalDate end);
 }

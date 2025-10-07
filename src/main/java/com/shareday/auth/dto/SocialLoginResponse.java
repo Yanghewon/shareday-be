@@ -13,7 +13,7 @@ public record SocialLoginResponse(
 ) {
     public static SocialLoginResponse from(User user, String token, boolean isNewUser) {
         return SocialLoginResponse.builder()
-                .userId(user.getId())
+                .userId(user.getUserId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .jwtToken(token)

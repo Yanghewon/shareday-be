@@ -1,6 +1,7 @@
 package com.shareday.event.entity;
 
-import com.shareday.event.enums.ParticipantType;
+import com.shareday.couple.entity.Couple;
+import com.shareday.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,30 +21,27 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long eventId;
 
-    @Column(nullable = false)
-    private Long coupleId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "couple_id")
+    private Couple couple;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false)
     private LocalDate eventDate;
 
-    @Column(nullable = false)
-    private LocalDateTime startTime;
+    private String type;
 
     @Column(nullable = false)
-    private LocalDateTime endTime;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ParticipantType participantType;
+    @Builder.Default
+    private Boolean isDday = false;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -51,19 +49,11 @@ public class Event {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean isDday = false;
-
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        if (this.isDday == null) {
-            this.isDday = false;
-        }
     }
-
 
     @PreUpdate
     protected void onUpdate() {

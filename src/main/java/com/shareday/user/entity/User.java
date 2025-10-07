@@ -1,44 +1,77 @@
+<<<<<<<< HEAD:src/main/java/com/shareday/auth/entity/User.java
+/*
+package com.shareday.auth.entity;
+========
 package com.shareday.user.entity;
+>>>>>>>> 08d6ff6a8fd9b723af63fc9367fc21242abcbb42:src/main/java/com/shareday/user/entity/User.java
 
-import com.shareday.auth.entity.Auth;
 import com.shareday.auth.enums.ProviderType;
+import com.shareday.couple.entity.Couple;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+<<<<<<< HEAD
+    private Long userId;
+=======
+    @Column(name = "user_id")
     private Long id;
 
     private String email;
     private String nickname;
     private String kakaoId;
+>>>>>>> 6a996ea (feat: 사용자 정보 조회 API 추가 및 OAuth2 인증 로직 개선)
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private ProviderType provider;
 
-    @OneToOne
-    @JoinColumn(name = "auth_id")
-    private Auth auth;
+    @Column(nullable = false, unique = true, length = 100)
+    private String providerId;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(nullable = false, length = 50)
+    private String nickname;
+
+    private LocalDate birthDate;
+
+    @Column(length = 1)
+    private String gender; // M, F 등 한 글자 코드
+
+    @Column(unique = true, length = 100)
+    private String email;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "couple_id")
+    private Couple couple;
+
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
+*/

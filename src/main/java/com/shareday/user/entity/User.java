@@ -24,7 +24,16 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+<<<<<<< HEAD
     private Long userId;
+=======
+    @Column(name = "user_id")
+    private Long id;
+
+    private String email;
+    private String nickname;
+    private String kakaoId;
+>>>>>>> 6a996ea (feat: 사용자 정보 조회 API 추가 및 OAuth2 인증 로직 개선)
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

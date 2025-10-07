@@ -122,10 +122,11 @@ public class SecurityConfig {
                             log.info("✅ JWT 발급 완료 -> {}", jwtToken);
 
                             // ✅ 프론트 리다이렉트 (token + userName 같이 전달)
-                            String redirectUrl = "http://localhost:5173/?token=" +
+                            String redirectUrl = "http://localhost:5173/oauth/success?token=" +
                                     URLEncoder.encode(jwtToken, StandardCharsets.UTF_8) +
                                     "&userName=" +
                                     URLEncoder.encode(userEntity.getNickname(), StandardCharsets.UTF_8);
+
 
                             log.info("✅ Redirect to frontend -> {}", redirectUrl);
 

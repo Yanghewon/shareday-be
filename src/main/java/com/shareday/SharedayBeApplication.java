@@ -21,4 +21,5 @@ public class SharedayBeApplication {
         System.out.println("👉 KAKAO_CLIENT_ID = " + env.getProperty("KAKAO_CLIENT_ID"));
         System.out.println("👉 KAKAO_CLIENT_SECRET = " + env.getProperty("KAKAO_CLIENT_SECRET"));
     }
+
 }

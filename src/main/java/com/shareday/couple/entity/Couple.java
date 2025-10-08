@@ -1,12 +1,12 @@
 package com.shareday.couple.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
-import java.time.LocalDate;
 import lombok.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "couple")
+@Table(name = "couple") // ✅ 실제 테이블 이름
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,6 +16,7 @@ public class Couple {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "couple_id") // ✅ PK 이름을 couple_id로 명시
     private Long coupleId;
 
     @Column(name = "start_date")
@@ -33,6 +34,7 @@ public class Couple {
     @Column(name = "is_accepted", nullable = false)
     private boolean accepted;
 
+    /** ✅ 엔티티 생성 시 자동으로 createdAt, updatedAt 설정 */
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -40,6 +42,7 @@ public class Couple {
         this.accepted = false;
     }
 
+    /** ✅ 업데이트 시 updatedAt 갱신 */
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();

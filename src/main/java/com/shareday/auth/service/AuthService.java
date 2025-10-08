@@ -57,6 +57,7 @@ public class AuthService {
             userRepository.save(user);
         }
 
+        // JWT 발급
         String token = jwtProvider.generateToken(auth.getId(), auth.getEmail());
 
         return new SocialSignUpResponse(
@@ -86,9 +87,9 @@ public class AuthService {
 
         boolean isNewUser = existingAuth.isEmpty();
 
-        User user = userRepository.findByKakaoId(userInfo.providerId()).orElseGet(() -> {
+        // ✅ 이메일 기준으로 User를 조회/생성 (kakaoId 사용 제거)
+        User user = userRepository.findByEmail(userInfo.email()).orElseGet(() -> {
             User newUser = User.builder()
-                    .kakaoId(userInfo.providerId())
                     .email(userInfo.email())
                     .nickname(userInfo.nickname())
                     .provider(auth.getProvider())
@@ -98,7 +99,6 @@ public class AuthService {
         });
 
         String token = jwtProvider.generateToken(auth.getId(), auth.getEmail());
-
         return SocialLoginResponse.from(user, token, isNewUser);
     }
 
@@ -130,16 +130,15 @@ public class AuthService {
                             .nickname(nickname)
                             .auth(authEntity)
                             .provider(provider)
-                            .kakaoId(provider == ProviderType.KAKAO ? providerId : null)
                             .build();
-                    User saved = userRepository.saveAndFlush(newUser); // flush 강제 실행
+                    User saved = userRepository.saveAndFlush(newUser);
                     log.info("✅ User 저장 완료 -> id={}, email={}", saved.getId(), saved.getEmail());
                     return saved;
                 });
 
-        // ✅ JWT 발급 (여기서는 단순 로그만, SecurityConfig에서 최종 발급)
+        // JWT 발급 (로그에 토큰 전체값 노출 금지!)
         String jwtToken = jwtProvider.generateToken(userEntity.getId(), userEntity.getEmail());
-        log.info("✅ JWT 발급 완료 -> token={}", jwtToken);
+        log.info("✅ JWT 발급 완료"); // 필요시 일부만 마스킹해서 출력
 
         return userEntity;
     }

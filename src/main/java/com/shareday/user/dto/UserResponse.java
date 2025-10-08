@@ -12,7 +12,8 @@ public class UserResponse {
     private String email;
     private String nickname;
     private ProviderType provider;
-    private boolean coupled; // ✅ 커플 여부 필드 추가
+    private boolean coupled;   // ✅ 커플 여부
+    private Long coupleId;     // ✅ 커플 ID 추가 (프론트에서 필요)
 
     public static UserResponse from(User user) {
         return UserResponse.builder()
@@ -20,8 +21,8 @@ public class UserResponse {
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .provider(user.getProvider())
-                .coupled(user.getCouple() != null) // ✅ 커플 객체가 있으면 true
+                .coupled(user.getCouple() != null)
+                .coupleId(user.getCouple() != null ? user.getCouple().getCoupleId() : null)
                 .build();
     }
 }
-

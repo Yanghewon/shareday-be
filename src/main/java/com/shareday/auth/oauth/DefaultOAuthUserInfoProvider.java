@@ -23,9 +23,9 @@ public class DefaultOAuthUserInfoProvider implements OAuthUserInfoProvider {
     @Override
     public OAuthUserInfo getUserInfo(ProviderType provider, String accessToken) {
         return switch (provider) {
-            case google -> fetchGoogleUser(accessToken);
-            case naver -> fetchNaverUser(accessToken);
-            case kakao -> fetchKakaoUser(accessToken);
+            case GOOGLE -> fetchGoogleUser(accessToken);
+            case NAVER -> fetchNaverUser(accessToken);
+            case KAKAO -> fetchKakaoUser(accessToken);
         };
     }
 
@@ -36,7 +36,7 @@ public class DefaultOAuthUserInfoProvider implements OAuthUserInfoProvider {
 
         Map<String, Object> body = response.getBody();
         return new OAuthUserInfo(
-                ProviderType.google,
+                ProviderType.GOOGLE,
                 (String) body.get("id"),
                 (String) body.get("email"),
                 (String) body.get("name")
@@ -50,7 +50,7 @@ public class DefaultOAuthUserInfoProvider implements OAuthUserInfoProvider {
 
         Map<String, Object> resp = (Map<String, Object>) response.getBody().get("response");
         return new OAuthUserInfo(
-                ProviderType.naver,
+                ProviderType.NAVER,
                 (String) resp.get("id"),
                 (String) resp.get("email"),
                 (String) resp.get("name")
@@ -67,7 +67,7 @@ public class DefaultOAuthUserInfoProvider implements OAuthUserInfoProvider {
         Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
 
         return new OAuthUserInfo(
-                ProviderType.kakao,
+                ProviderType.KAKAO,
                 String.valueOf(body.get("id")),
                 (String) kakaoAccount.get("email"),
                 (String) profile.get("nickname")

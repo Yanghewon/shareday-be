@@ -16,6 +16,12 @@ public record ApiResponse<T>(
     public static <T> ApiResponse<T> ok(T data) {
         return new ApiResponse<>(true, data, null);
     }
+
+    // ✅ 추가된 success 메서드 (호환용)
+    public static <T> ApiResponse<T> success(T data) {
+        return new ApiResponse<>(true, data, null);
+    }
+
     public static <T> ApiResponse<T> error(String message) {
         return new ApiResponse<>(false, null, message);
     }

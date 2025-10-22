@@ -8,10 +8,10 @@ import com.shareday.event.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -25,38 +25,58 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    // 이벤트 목록 조회
     @GetMapping
     @Operation(summary = "이벤트 목록 조회", description = "커플 ID로 일정을 조회합니다.")
     public ResponseEntity<ApiResponse<List<EventResponse>>> getEvents(
             @RequestParam Long coupleId
     ) {
-        return ResponseEntity.ok(ApiResponse.ok(eventService.getEvents(coupleId)));
+        List<EventResponse> events = eventService.getEvents(coupleId);
+        return ResponseEntity.ok(ApiResponse.ok(events));
     }
 
-
+    // 이벤트 생성
     @PostMapping
     @Operation(summary = "이벤트 생성", description = "새로운 일정을 등록합니다.")
     public ResponseEntity<ApiResponse<EventResponse>> createEvent(
             @Valid @RequestBody EventRequest request
     ) {
-        return ResponseEntity.ok(ApiResponse.ok(eventService.createEvent(request)));
+        EventResponse eventResponse = eventService.createEvent(request);
+        return ResponseEntity.ok(ApiResponse.ok(eventResponse));
     }
 
+    // 이벤트 수정
     @PatchMapping("/{eventId}")
     @Operation(summary = "이벤트 수정", description = "이벤트 ID로 일정을 수정합니다.")
     public ResponseEntity<ApiResponse<EventResponse>> updateEvent(
             @PathVariable Long eventId,
-            @Valid @RequestBody EventUpdateRequest request
+            @Valid @RequestBody EventUpdateRequest request  // 요청 본문에서 받는 필드
     ) {
-        return ResponseEntity.ok(ApiResponse.ok(eventService.updateEvent(eventId, request)));
+        try {
+            // EventService에서 받아온 userId, coupleId와 함께 request 전달
+            EventResponse updatedEvent = eventService.updateEvent(
+                    eventId, request, request.userId(), request.coupleId()
+            );
+            return ResponseEntity.ok(ApiResponse.ok(updatedEvent));
+        } catch (SecurityException e) {
+            // 수정 권한이 없는 경우
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ApiResponse.error("수정 권한이 없습니다."));
+        } catch (Exception e) {
+            // 기타 오류 처리
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("이벤트 수정 중 오류가 발생했습니다."));
+        }
     }
-
+    // 이벤트 삭제
     @DeleteMapping("/{eventId}")
     @Operation(summary = "이벤트 삭제", description = "이벤트 ID로 일정을 삭제합니다.")
     public ResponseEntity<ApiResponse<Void>> deleteEvent(
             @PathVariable Long eventId
     ) {
-        eventService.deleteEvent(eventId);
-        return ResponseEntity.ok(ApiResponse.ok(null));
+        try {
+            eventService.deleteEvent(eventId);
+            return ResponseEntity.ok(ApiResponse.ok(null));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse.error("이벤트 삭제 중 오류가 발생했습니다."));
+        }
     }
 }

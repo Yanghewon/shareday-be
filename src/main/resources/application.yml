@@ -7,7 +7,6 @@ spring:
     username: root
     password: gPdnjs75312@
     driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
       ddl-auto: update      # 개발 환경에서만 사용 (운영에서는 validate 권장)
@@ -15,11 +14,9 @@ spring:
     properties:
       hibernate:
         format_sql: true    # SQL 보기 좋게 출력
-
   threads:
     virtual:
       enabled: true
-
   security:
     oauth2:
       client:
@@ -43,6 +40,7 @@ spring:
               - name
               - email
             client-name: Naver
+            provider: naver
 
           kakao:
             client-id: ${KAKAO_CLIENT_ID}
@@ -55,6 +53,7 @@ spring:
               - account_email
               - profile_image
             client-name: Kakao
+            provider: kakao
 
         provider:
           naver:
@@ -71,7 +70,7 @@ spring:
 
 app:
   cors:
-    allowed-origins: "http://localhost:5173"
+    allowed-origins: "http://localhost:3000, http://localhost:5173"
 
 springdoc:
   api-docs:
@@ -82,3 +81,6 @@ springdoc:
     path: /swagger-ui
     operationsSorter: method
     tagsSorter: alpha
+jwt:
+  secret: 7TtS#0$Mlnz9O8kD1A5wqD$4*Wk6VwQ&2R!Ls7fg
+  expiration: 3600000

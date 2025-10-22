@@ -34,8 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             try {
-                var claimsJws = jwtProvider.validateAndParseToken(token);
-                var claims = claimsJws.getBody();
+                // claimsJws는 이미 Claims 객체임으로 getBody()를 호출할 필요가 없음
+                var claims = jwtProvider.validateAndParseToken(token);
 
                 Long userId = Long.valueOf(claims.getSubject()); // JWT의 sub
                 String email = claims.get("email", String.class);

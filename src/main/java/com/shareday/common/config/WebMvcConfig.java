@@ -40,5 +40,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
         // 필요 시 Pageable 기본값/커스텀 리졸버 추가 가능
+        // (Spring Data Web 의존성 있으면 기본 제공됨)
     }
 }

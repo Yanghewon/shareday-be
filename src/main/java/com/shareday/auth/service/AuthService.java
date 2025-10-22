@@ -1,21 +1,17 @@
 package com.shareday.auth.service;
 
-import com.shareday.auth.dto.OAuthUserInfo;
-import com.shareday.auth.dto.SocialSignUpRequest;
-import com.shareday.auth.dto.SocialSignUpResponse;
-import com.shareday.auth.dto.SocialLoginRequest;
-import com.shareday.auth.dto.SocialLoginResponse;
-import com.shareday.auth.entity.Auth;
+import com.shareday.auth.dto.*;
 import com.shareday.auth.enums.ProviderType;
 import com.shareday.auth.oauth.JwtProvider;
 import com.shareday.auth.oauth.OAuthUserInfoProvider;
 import com.shareday.auth.repository.AuthRepository;
+import com.shareday.auth.entity.Auth;
 import com.shareday.user.entity.User;
 import com.shareday.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 
 @Slf4j
 @Service
@@ -29,6 +25,7 @@ public class AuthService {
 
     @Transactional
     public SocialSignUpResponse socialSignUp(SocialSignUpRequest request) {
+        // 1. provider에서 사용자 정보 조회
         OAuthUserInfo userInfo =
                 oAuthUserInfoProvider.getUserInfo(request.provider(), request.accessToken());
 

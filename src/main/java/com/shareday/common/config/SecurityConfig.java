@@ -1,6 +1,7 @@
 package com.shareday.common.config;
 
 import com.shareday.auth.enums.ProviderType;
+import com.shareday.auth.filter.JwtAuthenticationFilter;
 import com.shareday.auth.oauth.JwtProvider;
 import com.shareday.auth.service.AuthService;
 import com.shareday.auth.service.CustomOAuth2UserService;
@@ -14,10 +15,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -41,16 +44,19 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .formLogin(AbstractHttpConfigurer::disable)   // ✅ 폼 로그인 비활성화
+                .formLogin(AbstractHttpConfigurer::disable)
+                // ⬇️ 인증 실패를 401 JSON으로 고정
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, ex1) -> {
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.setContentType("application/json;charset=UTF-8");
+                            res.getWriter().write("{\"message\":\"Unauthorized\"}");
+                        })
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login/**").permitAll()
                         .requestMatchers(
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/swagger-resources/**",
-                                "/webjars/**",
-                                "/api/**",
-                                "/auth/**"
+                                "/", "/login/**", "/auth/**",
+                                "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -73,7 +79,7 @@ public class SecurityConfig {
                             String nickname = null;
                             String providerId = null;
 
-                            ProviderType providerType = ProviderType.valueOf(registrationId.toUpperCase());
+                            var providerType = com.shareday.auth.enums.ProviderType.valueOf(registrationId.toUpperCase());
                             log.info("✅ ProviderType Enum = {}", providerType);
 
                             switch (registrationId) {
@@ -87,9 +93,7 @@ public class SecurityConfig {
                                     if (responseMap != null) {
                                         email = (String) responseMap.get("email");
                                         nickname = (String) responseMap.get("name");
-                                        if (nickname == null) {
-                                            nickname = (String) responseMap.get("nickname");
-                                        }
+                                        if (nickname == null) nickname = (String) responseMap.get("nickname");
                                         providerId = (String) responseMap.get("id");
                                     }
                                 }
@@ -127,9 +131,7 @@ public class SecurityConfig {
                                     "&userName=" +
                                     URLEncoder.encode(userEntity.getNickname(), StandardCharsets.UTF_8);
 
-
                             log.info("✅ Redirect to frontend -> {}", redirectUrl);
-
                             response.sendRedirect(redirectUrl);
                         })
                         .failureHandler((request, response, exception) -> {
@@ -139,6 +141,11 @@ public class SecurityConfig {
                             response.sendRedirect(redirectUrl);
                         })
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                )
+                // ✅ JWT 인증 필터 추가
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtProvider),
+                        UsernamePasswordAuthenticationFilter.class
                 );
 
         return http.build();
@@ -147,10 +154,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(allowedOrigins));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(List.of(allowedOrigins));  // CORS Origins 설정
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")); // 허용할 HTTP 메소드들
+        configuration.setAllowedHeaders(List.of("*", "Authorization"));  // Authorization 헤더 포함
+        configuration.setAllowCredentials(true);  // 쿠키/세션 정보 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
